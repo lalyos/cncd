@@ -1,4 +1,4 @@
-The original repo is coned just to host the hugo generated pages as github pages:
+The original repo is forked just to host the hugo generated pages as github pages:
 
 - [Pipeline Yaml Specification](https://lalyos.github.io/cncd/spec/yaml/)
 - [Intermediate Representation Specification](https://lalyos.github.io/cncd/spec/ir/)
