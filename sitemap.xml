@@ -3,34 +3,34 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://cncd.drone.io/spec/ir/</loc>
+    <loc>https://lalyos.github.io/cncd/spec/ir/</loc>
     <lastmod>2017-02-06T22:57:35+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://cncd.drone.io/spec/yaml/</loc>
+    <loc>https://lalyos.github.io/cncd/spec/yaml/</loc>
     <lastmod>2017-02-06T22:57:35+07:00</lastmod>
   </url>
   
   <url>
-    <loc>http://cncd.drone.io/</loc>
-    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://cncd.drone.io/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://cncd.drone.io/spec/</loc>
+    <loc>https://lalyos.github.io/cncd/</loc>
     <lastmod>2017-02-06T22:57:35+07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://cncd.drone.io/tags/</loc>
+    <loc>https://lalyos.github.io/cncd/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lalyos.github.io/cncd/spec/</loc>
+    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lalyos.github.io/cncd/tags/</loc>
     <priority>0</priority>
   </url>
   

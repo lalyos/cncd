@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>CNCD</title>
-    <link>http://cncd.drone.io/</link>
+    <link>https://lalyos.github.io/cncd/</link>
     <description>Recent content on CNCD</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 06 Feb 2017 22:57:35 +0700</lastBuildDate>
     
-	<atom:link href="http://cncd.drone.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://lalyos.github.io/cncd/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Intermediate Representation Specification (Draft)</title>
-      <link>http://cncd.drone.io/spec/ir/</link>
+      <link>https://lalyos.github.io/cncd/spec/ir/</link>
       <pubDate>Mon, 06 Feb 2017 22:57:35 +0700</pubDate>
       
-      <guid>http://cncd.drone.io/spec/ir/</guid>
+      <guid>https://lalyos.github.io/cncd/spec/ir/</guid>
       <description>Abstract This specification introduces an intermediate representation (IR) for defining continuous delivery pipelines and their container execution environments. A continuous delivery pipeline is an automated manifestation of your process for getting software from version control to release.
 Introduction This section is non-normative.
 This specification introduces an intermediate representation (IR) for defining continuous delivery pipelines and their container execution environments. The intermediate representation should be machine writable, machine executable, and platform agnostic.</description>
@@ -24,10 +24,10 @@ This specification introduces an intermediate representation (IR) for defining c
     
     <item>
       <title>Pipeline Yaml Specification (Draft)</title>
-      <link>http://cncd.drone.io/spec/yaml/</link>
+      <link>https://lalyos.github.io/cncd/spec/yaml/</link>
       <pubDate>Mon, 06 Feb 2017 22:57:35 +0700</pubDate>
       
-      <guid>http://cncd.drone.io/spec/yaml/</guid>
+      <guid>https://lalyos.github.io/cncd/spec/yaml/</guid>
       <description>Abstract This specification introduces a YAML format for defining continuous delivery pipelines and their container execution environments. A continuous delivery pipeline is an automated manifestation of your process for getting software from version control to release.
 Introduction This section is non-normative.
 This specification introduces a YAML format for defining continuous delivery pipelines and their container execution environments. The YAML format described in this specification is a superset of the docker-compose file.</description>
