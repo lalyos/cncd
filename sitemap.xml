@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://cncd.drone.io/spec/ir/</loc>
+    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://cncd.drone.io/spec/yaml/</loc>
+    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://cncd.drone.io/</loc>
+    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://cncd.drone.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://cncd.drone.io/spec/</loc>
+    <lastmod>2017-02-06T22:57:35+07:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://cncd.drone.io/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

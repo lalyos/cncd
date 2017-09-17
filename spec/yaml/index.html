@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+
+		<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="/highlight.css">
+		<link rel="stylesheet" type="text/css" href="/reset.css">
+		<link rel="stylesheet" type="text/css" href="/style.css">
+		<link rel="stylesheet" type="text/css" href="/spec.css">
+
+		<title>Pipeline Yaml Specification (Draft)</title>
+	</head>
+	<body>
+		<aside>
+			<nav id="TableOfContents">
+<ul>
+<li><a href="#abstract">Abstract</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#conformance">Conformance</a></li>
+<li><a href="#structure">Structure</a>
+<ul>
+<li><a href="#the-stringorslice-type">The <code>StringOrSlice</code> type</a></li>
+<li><a href="#the-mapequalslice-type">The <code>MapEqualSlice</code> type</a></li>
+<li><a href="#the-container-object">The <code>Container</code> object</a>
+<ul>
+<li><a href="#the-image-attribute">The <code>image</code> attribute</a></li>
+<li><a href="#the-pull-attribute">The <code>pull</code> attribute</a></li>
+<li><a href="#the-detached-attribute">The <code>detached</code> attribute</a></li>
+<li><a href="#the-privileged-attribute">The <code>privileged</code> attribute</a></li>
+<li><a href="#the-labels-attribute">The <code>labels</code> attribute</a></li>
+<li><a href="#the-environment-attribute">The <code>environment</code> attribute</a></li>
+<li><a href="#the-entrypoint-attribute">The <code>entrypoint</code> attribute</a></li>
+<li><a href="#the-command-attribute">The <code>command</code> attribute</a></li>
+<li><a href="#the-commands-attribute">The <code>commands</code> attribute</a></li>
+<li><a href="#the-devices-attribute">The <code>devices</code> attribute</a></li>
+<li><a href="#the-dns-attribute">The <code>dns</code> attribute</a></li>
+<li><a href="#the-dns-search-attribute">The <code>dns_search</code> attribute</a></li>
+<li><a href="#the-extra-hosts-attribute">The <code>extra_hosts</code> attribute</a></li>
+<li><a href="#the-shm-size-attribute">The <code>shm_size</code> attribute</a></li>
+<li><a href="#the-tmpfs-attribute">The <code>tmpfs</code> attribute</a></li>
+<li><a href="#the-volumes-attribute">The <code>volumes</code> attribute</a></li>
+<li><a href="#the-networks-section">The <code>networks</code> section</a></li>
+<li><a href="#the-resources-section">The <code>resources</code> section</a></li>
+<li><a href="#the-auth-config-section">The <code>auth_config</code> section</a></li>
+<li><a href="#the-when-section">The <code>when</code> section</a></li>
+</ul></li>
+<li><a href="#the-constraint-object">The <code>Constraint</code> object</a></li>
+<li><a href="#the-constraintmap-object">The <code>ConstraintMap</code> object</a></li>
+<li><a href="#the-constraintgroup-object">The <code>ConstraintGroup</code> object</a></li>
+<li><a href="#the-workspace-object">The <code>Workspace</code> object</a>
+<ul>
+<li><a href="#the-base-attribute">The <code>base</code> attribute</a></li>
+<li><a href="#the-path-attribute">The <code>path</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-volume-object">The <code>Volume</code> object</a>
+<ul>
+<li><a href="#the-name-attribute">The <code>name</code> attribute</a></li>
+<li><a href="#the-driver-attribute">The <code>driver</code> attribute</a></li>
+<li><a href="#the-driver-opts-attribute">The <code>driver_opts</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-network-object">The <code>Network</code> object</a>
+<ul>
+<li><a href="#the-name-attribute-1">The <code>name</code> attribute</a></li>
+<li><a href="#the-driver-attribute-1">The <code>driver</code> attribute</a></li>
+<li><a href="#the-driver-opts-attribute-1">The <code>driver_opts</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-networks-object">The <code>Networks</code> object</a></li>
+<li><a href="#the-resources-object">The <code>Resources</code> object</a></li>
+<li><a href="#the-authconfig-object">The <code>AuthConfig</code> object</a>
+<ul>
+<li><a href="#the-username-attribute">The <code>username</code> attribute</a></li>
+<li><a href="#the-password-attribute">The <code>password</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-event-enum">The <code>Event</code> enum</a></li>
+<li><a href="#the-status-enum">The <code>Status</code> enum</a></li>
+</ul></li>
+<li><a href="#definition">Definition</a>
+<ul>
+<li><a href="#the-version-attribute">The <code>version</code> attribute</a></li>
+<li><a href="#the-platform-section">The <code>platform</code> section</a></li>
+<li><a href="#the-clone-section">The <code>clone</code> section</a></li>
+<li><a href="#the-workspace-section">The <code>workspace</code> section</a></li>
+<li><a href="#the-pipeline-section">The <code>pipeline</code> section</a></li>
+<li><a href="#the-services-section">The <code>services</code> section</a></li>
+<li><a href="#the-networks-section-1">The <code>networks</code> section</a></li>
+<li><a href="#the-volumes-section">The <code>volumes</code> section</a></li>
+<li><a href="#the-branches-section">The <code>branches</code> section</a></li>
+<li><a href="#the-labels-section">The <code>labels</code> section</a></li>
+</ul></li>
+<li><a href="#plugins">Plugins</a></li>
+<li><a href="#commands">Commands</a>
+<ul>
+<li><a href="#linux">Linux</a></li>
+<li><a href="#windows">Windows</a></li>
+</ul></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#examples">Examples</a>
+<ul>
+<li><a href="#example-pipeline">Example Pipeline</a></li>
+<li><a href="#example-pipeline-with-services">Example Pipeline with Services</a></li>
+<li><a href="#example-pipeline-with-workspace">Example Pipeline with Workspace</a></li>
+<li><a href="#example-pipeline-with-clone">Example Pipeline with Clone</a></li>
+<li><a href="#example-pipeline-limits-branches">Example Pipeline limits Branches</a></li>
+</ul></li>
+<li><a href="#references">References</a>
+<ul>
+<li><a href="#normative-references">Normative References</a></li>
+<li><a href="#informative-references">Informative References</a></li>
+</ul></li>
+</ul>
+</nav>
+		</aside>
+		<main>
+			<header>
+				<h1>
+					<span>Pipeline Yaml Specification (Draft)</span>
+					<small>Cloud Native Continuous Delivery (CNCD) Working Group</small>
+				</h1>
+			</header>
+
+			<dl class="refs">
+				<dt>This Version</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd">https://github.com/cncd/cncd</a>
+					
+				</dd>
+
+				<dt>Previous Versions</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd/tree/master">https://github.com/cncd/cncd/tree/master</a>
+					
+				</dd>
+
+				<dt>Editors</dt>
+				<dd>
+					
+					<a href="https://github.com/bradrydzewski">bradrydzewski</a>
+					
+				</dd>
+
+				<dt>Raise Issues</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd/issues">https://github.com/cncd/cncd/issues</a>
+					
+				</dd>
+			</dl>
+
+			<section class="spec">
+			
+
+<h1 id="abstract">Abstract</h1>
+
+<p>This specification introduces a YAML format for defining continuous delivery pipelines and their container execution environments. A continuous delivery pipeline is an automated manifestation of your process for getting software from version control to release.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>This specification introduces a YAML format for defining continuous delivery pipelines and their container execution environments. The YAML format described in this specification is a superset of the <a href="https://docs.docker.com/compose/compose-file/">docker-compose</a> file. It is meant to be human readable and human writable, and should compile to the <a href="/spec/ir/">intermediate representation</a> per the specification.</p>
+
+<p>This specification therefore targets both end-users writing pipeline configuration files, and compiler tools that convert the YAML representation to the intermediate representation.</p>
+
+<h1 id="conformance">Conformance</h1>
+
+<p>As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative.</p>
+
+<p>The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in <a href="https://tools.ietf.org/html/rfc2119">RFC2119</a>.</p>
+
+<h1 id="structure">Structure</h1>
+
+<p>This section defines custom types and structures used to represent the pipeline configuration.</p>
+
+<h2 id="the-stringorslice-type">The <code>StringOrSlice</code> type</h2>
+
+<p>The <code>StringOrSlice</code> is type alias for a <code>string[]</code> that can be represented as a string or a string array.</p>
+
+<p>Example string representation:</p>
+
+<pre><code class="language-yaml">commands: echo hello
+</code></pre>
+
+<p>Example string array representation:</p>
+
+<pre><code class="language-yaml">commands:
+  - echo hello
+  - echo world
+</code></pre>
+
+<h2 id="the-mapequalslice-type">The <code>MapEqualSlice</code> type</h2>
+
+<p>The <code>MapEqualSlice</code> is type alias for a map <code>[string, string]</code> that can be represented as a map or a string array of items in <code>KEY=VALUE</code> format.</p>
+
+<p>Example map representation:</p>
+
+<pre><code class="language-yaml">environment:
+  foo: bar
+  baz: qux
+</code></pre>
+
+<p>Example string array representation:</p>
+
+<pre><code class="language-yaml">environment:
+  - foo=bar
+  - baz=qux
+</code></pre>
+
+<h2 id="the-container-object">The <code>Container</code> object</h2>
+
+<p>The <code>Container</code> object defines a container process in the pipeline. The step attributes define how a container is created and started. Each of these attributes are defined below, as well as how their values are processed.</p>
+
+<pre><code class="language-typescript">interface Container {
+  image: string
+  pull: boolean
+  detached: boolean
+  privileged: boolean
+  labels: MapEqualSlice
+  environment: MapEqualSlice
+  entrypoint: StringOrSlice
+  command: StringOrSlice
+  commands: StringOrSlice
+  devices: StringOrSlice
+  extra_hosts: StringOrSlice
+  dns: StringOrSlice
+  dns_search: StringOrSlice
+  tmpfs: StringOrSlice
+  volumes: StringOrSlice
+  networks: Networks
+  shm_size: number
+  resources: Resources
+  auth_config: AuthConfig
+  when: ConstraintGroup
+}
+</code></pre>
+
+<h3 id="the-image-attribute">The <code>image</code> attribute</h3>
+
+<p>The name of the image to start the container from. This attribute is of type <code>string</code> and is required. This can be any valid image name or location.</p>
+
+<pre><code class="language-yaml">image: redis:latest
+image: library/redis:latest
+image: index.docker.io/library/redis:latest
+</code></pre>
+
+<h3 id="the-pull-attribute">The <code>pull</code> attribute</h3>
+
+<p>Pull the latest version of the image. This attribute is of type <code>boolean</code> and is optional.</p>
+
+<pre><code>image: golang
+pull: true
+</code></pre>
+
+<h3 id="the-detached-attribute">The <code>detached</code> attribute</h3>
+
+<p>Start the container and run in the background. This attribute is of type <code>boolean</code> and is optional. Note that service containers run in detached mode by default, and will ignore this attribute.</p>
+
+<pre><code class="language-yaml">pipeline:
+  redis:
+    image: redis
+    detached: true
+</code></pre>
+
+<h3 id="the-privileged-attribute">The <code>privileged</code> attribute</h3>
+
+<p>Start the container with extended privileges. This attribute is of type <code>boolean</code> and is optional.</p>
+
+<pre><code class="language-yaml">image: golang
+privileged: true
+</code></pre>
+
+<h3 id="the-labels-attribute">The <code>labels</code> attribute</h3>
+
+<p>todo</p>
+
+<h3 id="the-environment-attribute">The <code>environment</code> attribute</h3>
+
+<p>Set environment variables in the container. The attribute is of type <code>MapEqualSlice</code> and is optional.</p>
+
+<p>Example map representation:</p>
+
+<pre><code class="language-yaml">image: golang
+environment:
+  GOPATH: /go
+</code></pre>
+
+<p>Example slice representation:</p>
+
+<pre><code class="language-yaml">image: golang
+environment:
+  - GOPATH=/go
+</code></pre>
+
+<h3 id="the-entrypoint-attribute">The <code>entrypoint</code> attribute</h3>
+
+<p>todo</p>
+
+<h3 id="the-command-attribute">The <code>command</code> attribute</h3>
+
+<p>todo</p>
+
+<h3 id="the-commands-attribute">The <code>commands</code> attribute</h3>
+
+<p>Execute the commands in the container. This attribute is of type <code>StringOrSlice</code> and is optional. This section is generally where you define your build commands (non-normative). Note that specifying a list of commands may override the default <code>entrypoint</code> and <code>command</code> attributes.</p>
+
+<pre><code class="language-yaml">commands:
+  - go get
+  - go install
+  - go test -v
+</code></pre>
+
+<h3 id="the-devices-attribute">The <code>devices</code> attribute</h3>
+
+<p>Expose devices to a container. For example, a specific block storage device or loop device or audio device can be added to an otherwise unprivileged container. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">devices:
+  - /dev/sdc:/dev/xvdc
+</code></pre>
+
+<h3 id="the-dns-attribute">The <code>dns</code> attribute</h3>
+
+<p>Sets the IP addresses as server lines to the container&rsquo;s <code>/etc/resolv.conf</code> file. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">dns:
+  - 8.8.8.8
+  - 9.9.9.9
+</code></pre>
+
+<h3 id="the-dns-search-attribute">The <code>dns_search</code> attribute</h3>
+
+<p>Sets the domain names that are searched when a bare unqualified hostname is used. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">dns_search:
+  - dc1.example.com
+  - dc2.example.com
+</code></pre>
+
+<h3 id="the-extra-hosts-attribute">The <code>extra_hosts</code> attribute</h3>
+
+<p>Add additional lines to the container&rsquo;s <code>/etc/hosts</code> file. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">extra_hosts:
+  - somehost:162.242.195.82
+  - otherhost:50.31.209.229
+</code></pre>
+
+<h3 id="the-shm-size-attribute">The <code>shm_size</code> attribute</h3>
+
+<p>Sets the size of <code>/dev/shm</code> in bytes. This attribute is of type <code>int64</code> and is optional.</p>
+
+<pre><code class="language-json">shm_size&quot;: 64000000
+</code></pre>
+
+<h3 id="the-tmpfs-attribute">The <code>tmpfs</code> attribute</h3>
+
+<p>Mounts an empty temporary file system inside of the container. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">tmpfs:
+  - /run
+  - /tmp
+</code></pre>
+
+<h3 id="the-volumes-attribute">The <code>volumes</code> attribute</h3>
+
+<p>Mount paths or named volumes, optionally specifying a path on the host machine. This attribute is of type <code>StringOrSlice</code> and is optional.</p>
+
+<pre><code class="language-yaml">volumes:
+  - /tmp/root:/root
+</code></pre>
+
+<h3 id="the-networks-section">The <code>networks</code> section</h3>
+
+<p>todo</p>
+
+<h3 id="the-resources-section">The <code>resources</code> section</h3>
+
+<p>todo</p>
+
+<h3 id="the-auth-config-section">The <code>auth_config</code> section</h3>
+
+<p>todo</p>
+
+<h3 id="the-when-section">The <code>when</code> section</h3>
+
+<p>todo</p>
+
+<h2 id="the-constraint-object">The <code>Constraint</code> object</h2>
+
+<p>todo</p>
+
+<pre><code class="language-typescript">interface Constraint {
+  includes: [string, string]
+  excludes: [string, string]
+}
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches: master
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches: [ master, feature/* ]
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches:
+  includes: master
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches:
+  includes: [ master, feature/* ]
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches:
+  includes: [ master, feature/* ]
+  excludes: feature/foo
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code class="language-yaml">branches:
+  includes: [ master, feature/* ]
+  excludes: [ feature/foo, feature/*/bar ]
+</code></pre>
+
+<h2 id="the-constraintmap-object">The <code>ConstraintMap</code> object</h2>
+
+<p>todo</p>
+
+<pre><code class="language-typescript">interface ConstraintMap {
+  includes: [string, string]
+  excludes: [string, string]
+}
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code>when:
+  matrix:
+    foo: bar
+    baz: qux
+</code></pre>
+
+<p>todo: add description</p>
+
+<pre><code>when:
+  matrix:
+    includes:
+      foo: bar
+      baz: qux
+    excludes:
+      qoo: qux
+</code></pre>
+
+<h2 id="the-constraintgroup-object">The <code>ConstraintGroup</code> object</h2>
+
+<p>todo</p>
+
+<pre><code class="language-typescript">interface ConstraintGroup {
+  repo: Constraint
+  instance: Constraint
+  platform: Constraint
+  environment: Constraint
+  event: Constraint
+  branch: Constraint
+  status: Constraint
+  matrix: ConstraintMap
+}
+</code></pre>
+
+<h2 id="the-workspace-object">The <code>Workspace</code> object</h2>
+
+<p>todo: add description</p>
+
+<pre><code class="language-typescript">interface Workspace {
+  base: string
+  path: string
+}
+</code></pre>
+
+<p>Example workspace:</p>
+
+<pre><code>workspace:
+  base: /go
+  path: src/github.com/octocat/hello-world
+</code></pre>
+
+<h3 id="the-base-attribute">The <code>base</code> attribute</h3>
+
+<p>todo</p>
+
+<h3 id="the-path-attribute">The <code>path</code> attribute</h3>
+
+<p>todo</p>
+
+<h2 id="the-volume-object">The <code>Volume</code> object</h2>
+
+<p>todo: add description</p>
+
+<pre><code class="language-typescript">interface Volume {
+  name: string
+  driver: string
+  driver_opts: [string, string]
+}
+</code></pre>
+
+<h3 id="the-name-attribute">The <code>name</code> attribute</h3>
+
+<p>The name of the volume. This value is required and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-driver-attribute">The <code>driver</code> attribute</h3>
+
+<p>The name of the volume driver. This value is required.</p>
+
+<h3 id="the-driver-opts-attribute">The <code>driver_opts</code> attribute</h3>
+
+<p>Additional volume driver options in key value format.</p>
+
+<h2 id="the-network-object">The <code>Network</code> object</h2>
+
+<p>todo: add description</p>
+
+<pre><code class="language-typescript">interface Volume {
+  name: string
+  driver: string
+  driver_opts: [string, string]
+}
+</code></pre>
+
+<h3 id="the-name-attribute-1">The <code>name</code> attribute</h3>
+
+<p>The name of the network. This value is required and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-driver-attribute-1">The <code>driver</code> attribute</h3>
+
+<p>The name of the network driver. This value is required.</p>
+
+<h3 id="the-driver-opts-attribute-1">The <code>driver_opts</code> attribute</h3>
+
+<p>Additional network driver options in key value format.</p>
+
+<h2 id="the-networks-object">The <code>Networks</code> object</h2>
+
+<p>todo: add description</p>
+
+<pre><code class="language-typescript">interface Network {
+  name: string
+  aliases: string[]
+}
+</code></pre>
+
+<h2 id="the-resources-object">The <code>Resources</code> object</h2>
+
+<p>The <code>resources</code> object is used to reserve resources and apply resource limits to the container.</p>
+
+<pre><code class="language-typescript">interface Resources {
+  limits: Limits
+  reservations: Limits
+}
+
+interface Limits {
+  cpus: string
+  memory: number
+}
+</code></pre>
+
+<p>Example resource reservations and limits:</p>
+
+<pre><code class="language-yaml">resources:
+  limits:
+    cpus: 1,2
+    memory: 2048
+  reservations:
+    cpus: 1
+    memory: 1024
+</code></pre>
+
+<h2 id="the-authconfig-object">The <code>AuthConfig</code> object</h2>
+
+<p>todo: add description</p>
+
+<pre><code>interface AuthConfig {
+  username: string
+  password: string
+}
+</code></pre>
+
+<h3 id="the-username-attribute">The <code>username</code> attribute</h3>
+
+<p>The username used to authenticate to the remote registry.</p>
+
+<h3 id="the-password-attribute">The <code>password</code> attribute</h3>
+
+<p>The password used to authenticate to the remote registry.</p>
+
+<h2 id="the-event-enum">The <code>Event</code> enum</h2>
+
+<p>todo: add description</p>
+
+<pre><code>enum Event {
+  pull_request,
+  push,
+  tag,
+  deployment
+}
+</code></pre>
+
+<h2 id="the-status-enum">The <code>Status</code> enum</h2>
+
+<p>todo: add description</p>
+
+<pre><code>enum Status {
+  success,
+  failure,
+  changed
+}
+</code></pre>
+
+<h1 id="definition">Definition</h1>
+
+<p>The pipeline configuration is a YAML document that defines the pipeline execution environment and execution steps. The document is unmarshaled to the following structure:</p>
+
+<pre><code class="language-typescript">interface Configuration {
+  version: string
+  platform: string
+  branches: Constraint
+  workspace: Workspace
+  clone: [string, Container]
+  pipeline: [string, Container]
+  services: [string, Container]
+  networks: Network[]
+  volumes: Volume[]
+  labels: string[]
+}
+</code></pre>
+
+<h2 id="the-version-attribute">The <code>version</code> attribute</h2>
+
+<p>The <code>version</code> attribute defines the version of the specification used to define the pipeline and to unmarshal the document. This attribute is of type <code>string</code> and is optional.</p>
+
+<pre><code>version: 1
+</code></pre>
+
+<h2 id="the-platform-section">The <code>platform</code> section</h2>
+
+<p>The <code>platform</code> attribute specifies the target operating system and architecture on which the pipeline must execute. This attribute is of type <code>string</code> and is optional. The platform must be one of the following values:</p>
+
+<pre><code>linux/amd64
+linux/arm
+linux/arm64
+windows/amd64
+windows/arm
+windows/arm64
+freebsd/amd64
+</code></pre>
+
+<h2 id="the-clone-section">The <code>clone</code> section</h2>
+
+<p>The <code>clone</code> section defines a list of containers executed prior to the pipeline, intended for fetching source from the version control system. This section is of type <code>[string, Container]</code> and is optional. The order of the set must be retained, and the keys must be used as the container aliases.</p>
+
+<p>Example clone section overrides default configuration:</p>
+
+<pre><code>clone:
+  git:
+    image: plugins/git
+    depth: 1
+</code></pre>
+
+<h2 id="the-workspace-section">The <code>workspace</code> section</h2>
+
+<p>The <code>workspace</code> section defines a shared volume and working directory for your pipeline. This section is of type <code>Workspace</code> and is optional.</p>
+
+<p>Example workspace configuration:</p>
+
+<pre><code>workspace:
+  base: /go
+  path: src/github.com/octocat/hello-world
+</code></pre>
+
+<p>The <code>base</code> attribute defines a volume that is mounted to all steps in your pipeline. This shared volume is what allows your source code and artifacts to persist between steps and containers.</p>
+
+<p>The <code>path</code> attribute is relative to the <code>base</code> and represents the working directory for all steps in your pipeline. It is also the root of your git repository where your code is cloned.</p>
+
+<h2 id="the-pipeline-section">The <code>pipeline</code> section</h2>
+
+<p>todo</p>
+
+<h2 id="the-services-section">The <code>services</code> section</h2>
+
+<p>todo</p>
+
+<h2 id="the-networks-section-1">The <code>networks</code> section</h2>
+
+<p>todo</p>
+
+<h2 id="the-volumes-section">The <code>volumes</code> section</h2>
+
+<p>todo</p>
+
+<h2 id="the-branches-section">The <code>branches</code> section</h2>
+
+<p>The <code>branches</code> section defines matching criteria for the target branch that must evaluate to true in order for the pipeline to execute. This section is of type <code>Constraint</code> and is optional.</p>
+
+<p>Example limits pipeline execution to target branch <code>master</code></p>
+
+<pre><code>branches: master
+</code></pre>
+
+<p>Example limits pipeline execution to target branch <code>master</code> or <code>feature/*</code></p>
+
+<pre><code>branches: [ master, feature/* ]
+</code></pre>
+
+<p>Example limits pipeline execution to target branch <code>master</code> using alternate syntax.</p>
+
+<pre><code>branches:
+  includes: master
+</code></pre>
+
+<p>Example limits pipeline execution to values matching <code>master</code> or <code>feature/*</code></p>
+
+<pre><code>branches:
+  includes: [ master, feature/* ]
+</code></pre>
+
+<p>Example limits pipeline execution to values matching <code>master</code> or <code>feature/*</code> that do not match the values in the <code>excludes</code> section.</p>
+
+<pre><code>branches:
+  includes: [ master, feature/* ]
+  excludes: [ feature/foo, feature/*/bar ]
+</code></pre>
+
+<h2 id="the-labels-section">The <code>labels</code> section</h2>
+
+<p>The <code>labels</code> section provides a list of user-defined key value pairs used to label the pipeline. These labels may be used by the runtime to control how or where containers are executed (non-normative). The section is of type <code>MapEqualSlice</code> and is optional.</p>
+
+<p>Example labels defined in map format:</p>
+
+<pre><code>labels:
+  foo: bar
+  baz: qux
+</code></pre>
+
+<p>Example labels defined as a list of items in <code>KEY=VALUE</code> format:</p>
+
+<pre><code>labels:
+  - foo=bar
+  - baz=qux
+</code></pre>
+
+<h1 id="plugins">Plugins</h1>
+
+<p><em>This section is non-normative</em></p>
+
+<p>todo</p>
+
+<h1 id="commands">Commands</h1>
+
+<p><em>This section is non-normative</em></p>
+
+<p>The section demonstrates how commands may be executed at runtime in their container environments. These implementation guidelines are optional and are for reference purposes only.</p>
+
+<h2 id="linux">Linux</h2>
+
+<p><em>This section is non-normative</em></p>
+
+<p>This section demonstrates how the commands section may be converted to a shell script for runtime execution. The following is an example configuration:</p>
+
+<pre><code class="language-yaml">image: golang
+commands:
+  - go build
+  - go test
+</code></pre>
+
+<p>The commands section may be converted to a Linux shell script:</p>
+
+<pre><code class="language-text">#!/bin/sh
+
+set -e
+go build
+go test
+</code></pre>
+
+<p>The shell script can be executed as the container entrypoint and command:</p>
+
+<pre><code class="language-json">{
+  &quot;image&quot;: &quot;golang:latest&quot;,
+  &quot;entrypoint&quot;: [ &quot;/bin/bash&quot;, &quot;-c&quot; ],
+  &quot;command&quot;: [ &quot;set -e; go build; go test&quot; ]
+}
+</code></pre>
+
+<h2 id="windows">Windows</h2>
+
+<p><em>This section is non-normative</em></p>
+
+<p>This section demonstrates how the commands section may be converted to a powershell script for runtime execution. The following is an example configuration:</p>
+
+<pre><code class="language-yaml">image: golang:1.7-windowsservercore
+commands:
+  - go build
+  - go test
+</code></pre>
+
+<p>The commands section may be converted to a Windows powershell script:</p>
+
+<pre><code class="language-text">go build
+go test
+</code></pre>
+
+<p>The powershell script can be executed as the container entrypoint and command:</p>
+
+<pre><code class="language-json">{
+  &quot;image&quot;: &quot;golang:1.7-windowsservercore&quot;,
+  &quot;entrypoint&quot;: [ &quot;powershell&quot;, &quot;-command&quot; ],
+  &quot;command&quot;: [ &quot;go build; go test&quot; ]
+}
+</code></pre>
+
+<h1 id="security">Security</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Compilers should audit the use of privileged features and capabilities because hostile authors could otherwise use these settings to compromise the host machine.</p>
+
+<h1 id="examples">Examples</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>This section shows example features of this specification.</p>
+
+<h2 id="example-pipeline">Example Pipeline</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Example pipeline configured to execute two steps. The first step builds and tests the frontend code, and the second step builds and tests the backend code.</p>
+
+<pre><code class="language-yaml">pipeline:
+  frontend:
+    image: node
+    commands:
+      - npm install
+      - npm run tests
+
+  backend:
+    image: golang:1.7
+    commands:
+      - go get
+      - go test
+</code></pre>
+
+<h2 id="example-pipeline-with-services">Example Pipeline with Services</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Example defines a service container (redis) that is started prior to pipeline execution. Steps in the pipeline are able to access the service container using its alias hostname (redis).</p>
+
+<pre><code class="language-yaml">pipeline:
+  test:
+    image: golang:1.7
+    commands:
+      - go get
+      - go test
+
+services:
+  redis:
+    image: redis:latest
+</code></pre>
+
+<h2 id="example-pipeline-with-workspace">Example Pipeline with Workspace</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Example demonstrates customizing the workspace location. The <code>/go</code> directory represents the volume mounted into all pipeline containers, and <code>src/github.com/foo/bar</code> is the working directory in which pipeline containers are started.</p>
+
+<pre><code class="language-yaml">workspace:
+  base: /go
+  path: src/github.com/foo/bar
+
+pipeline:
+  test:
+    image: golang:1.7
+    commands:
+      - go get
+      - go test
+</code></pre>
+
+<h2 id="example-pipeline-with-clone">Example Pipeline with Clone</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Example demonstrates customizing the clone stage. The image is set to <code>plugins/git</code> and includes the depth parameter which is passed to the container as environment variable <code>PLUGINS_DEPTH=50</code>.</p>
+
+<pre><code class="language-yaml">clone:
+  git:
+    image: plugins/git
+    depth: 50
+
+pipeline:
+  test:
+    image: golang:1.7
+    commands:
+      - go get
+      - go test
+</code></pre>
+
+<h2 id="example-pipeline-limits-branches">Example Pipeline limits Branches</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Example limits the target branches for which the pipeline is executed.</p>
+
+<pre><code class="language-yaml">pipeline:
+  test:
+    image: golang:1.7
+    commands:
+      - go get
+      - go test
+
+branches:
+  include:
+    - master
+    - feature/*
+  exclude:
+    - feature/experiment/*
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<h2 id="normative-references">Normative References</h2>
+
+<dl>
+<dt>YAML SPECIFICATION</dt>
+<dd>Oren Ben-Kiki, Clark Evans, Ingy döt Net. September 2009. <a href="http://yaml.org/spec">http://yaml.org/spec</a></dd>
+</dl>
+
+<h2 id="informative-references">Informative References</h2>
+
+<dl>
+<dt>DOCKER RUN</dt>
+<dd><a href="https://docs.docker.com/engine/reference/run/">Docker Run Reference</a>, Docker Inc.</dd>
+<dt>DOCKER COMPOSE</dt>
+<dd><a href="https://docs.docker.com/compose/compose-file/">Compose File Reference</a>, Docker Inc.</dd>
+</dl>
+
+			</section>
+		</main>
+
+		<script src="/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>
