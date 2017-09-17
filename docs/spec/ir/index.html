@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+
+		<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="/highlight.css">
+		<link rel="stylesheet" type="text/css" href="/reset.css">
+		<link rel="stylesheet" type="text/css" href="/style.css">
+		<link rel="stylesheet" type="text/css" href="/spec.css">
+
+		<title>Intermediate Representation Specification (Draft)</title>
+	</head>
+	<body>
+		<aside>
+			<nav id="TableOfContents">
+<ul>
+<li><a href="#abstract">Abstract</a></li>
+<li><a href="#introduction">Introduction</a>
+<ul>
+<li><a href="#frontends">Frontends</a></li>
+<li><a href="#backends">Backends</a></li>
+</ul></li>
+<li><a href="#conformance">Conformance</a></li>
+<li><a href="#structure">Structure</a>
+<ul>
+<li><a href="#the-config-object">The <code>Config</code> object</a></li>
+<li><a href="#the-stage-object">The <code>Stage</code> object</a>
+<ul>
+<li><a href="#the-name-attribute">The <code>name</code> attribute</a></li>
+<li><a href="#the-steps-attribute">The <code>steps</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-step-object">The <code>Step</code> object</a>
+<ul>
+<li><a href="#the-name-attribute-1">The <code>name</code> attribute</a></li>
+<li><a href="#the-alias-attribute">The <code>alias</code> attribute</a></li>
+<li><a href="#the-image-attribute">The <code>image</code> attribute</a></li>
+<li><a href="#the-pull-attribute">The <code>pull</code> attribute</a></li>
+<li><a href="#the-detached-attribute">The <code>detached</code> attribute</a></li>
+<li><a href="#the-privileged-attribute">The <code>privileged</code> attribute</a></li>
+<li><a href="#the-working-dir-attribute">The <code>working_dir</code> attribute</a></li>
+<li><a href="#the-environment-attribute">The <code>environment</code> attribute</a></li>
+<li><a href="#the-entrypoint-attribute">The <code>entrypoint</code> attribute</a></li>
+<li><a href="#the-command-attribute">The <code>command</code> attribute</a></li>
+<li><a href="#the-devices-attribute">The <code>devices</code> attribute</a></li>
+<li><a href="#the-dns-attribute">The <code>dns</code> attribute</a></li>
+<li><a href="#the-dns-search-attribute">The <code>dns_search</code> attribute</a></li>
+<li><a href="#the-extra-hosts-attribute">The <code>extra_hosts</code> attribute</a></li>
+<li><a href="#the-shm-size-attribute">The <code>shm_size</code> attribute</a></li>
+<li><a href="#the-tmpfs-attribute">The <code>tmpfs</code> attribute</a></li>
+<li><a href="#the-volumes-attribute">The <code>volumes</code> attribute</a></li>
+<li><a href="#the-networks-attribute">The <code>networks</code> attribute</a></li>
+<li><a href="#the-auth-config-section">The <code>auth_config</code> section</a></li>
+<li><a href="#the-on-success-attribute">The <code>on_success</code> attribute</a></li>
+<li><a href="#the-on-failure-attribute">The <code>on_failure</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-auth-object">The <code>Auth</code> object</a></li>
+<li><a href="#the-conn-object">The <code>Conn</code> object</a></li>
+<li><a href="#the-network-object">The <code>Network</code> object</a>
+<ul>
+<li><a href="#the-name-attribute-2">The <code>name</code> attribute</a></li>
+<li><a href="#the-driver-attribute">The <code>driver</code> attribute</a></li>
+<li><a href="#the-driver-opts-attribute">The <code>driver_opts</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-volume-object">The <code>Volume</code> object</a>
+<ul>
+<li><a href="#the-name-attribute-3">The <code>name</code> attribute</a></li>
+<li><a href="#the-driver-attribute-1">The <code>driver</code> attribute</a></li>
+<li><a href="#the-driver-opts-attribute-1">The <code>driver_opts</code> attribute</a></li>
+</ul></li>
+<li><a href="#the-state-enum">The <code>State</code> enum</a></li>
+</ul></li>
+<li><a href="#configuration">Configuration</a>
+<ul>
+<li><a href="#the-version-attribute">The <code>version</code> attribute</a></li>
+<li><a href="#the-volumes-section">The <code>volumes</code> section</a></li>
+<li><a href="#the-networks-section">The <code>networks</code> section</a></li>
+<li><a href="#the-pipeline-section">The <code>pipeline</code> section</a>
+<ul>
+<li><a href="#the-steps-section">The <code>steps</code> section</a></li>
+<li><a href="#the-step-attributes">The <code>step</code> attributes</a></li>
+<li><a href="#the-detached-attribute-1">The <code>detached</code> attribute</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#states">States</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#disk-space">Disk Space</a></li>
+<li><a href="#examples">Examples</a>
+<ul>
+<li><a href="#example-pipeline">Example Pipeline</a></li>
+<li><a href="#example-pipeline-with-services">Example Pipeline with Services</a></li>
+<li><a href="#example-pipeline-with-parallelism">Example Pipeline with Parallelism</a></li>
+<li><a href="#example-travis-configuration">Example Travis Configuration</a></li>
+</ul></li>
+<li><a href="#references">References</a>
+<ul>
+<li><a href="#normative-references">Normative References</a></li>
+<li><a href="#informative-references">Informative References</a></li>
+</ul></li>
+</ul>
+</nav>
+		</aside>
+		<main>
+			<header>
+				<h1>
+					<span>Intermediate Representation Specification (Draft)</span>
+					<small>Cloud Native Continuous Delivery (CNCD) Working Group</small>
+				</h1>
+			</header>
+
+			<dl class="refs">
+				<dt>This Version</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd">https://github.com/cncd/cncd</a>
+					
+				</dd>
+
+				<dt>Previous Versions</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd/tree/master">https://github.com/cncd/cncd/tree/master</a>
+					
+				</dd>
+
+				<dt>Editors</dt>
+				<dd>
+					
+					<a href="https://github.com/bradrydzewski">bradrydzewski</a>
+					
+				</dd>
+
+				<dt>Raise Issues</dt>
+				<dd>
+					
+					<a href="https://github.com/cncd/cncd/issues">https://github.com/cncd/cncd/issues</a>
+					
+				</dd>
+			</dl>
+
+			<section class="spec">
+			
+
+<h1 id="abstract">Abstract</h1>
+
+<p>This specification introduces an intermediate representation (IR) for defining continuous delivery pipelines and their container execution environments. A continuous delivery pipeline is an automated manifestation of your process for getting software from version control to release.</p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>This specification introduces an intermediate representation (IR) for defining continuous delivery pipelines and their container execution environments. The intermediate representation should be machine writable, machine executable, and platform agnostic.</p>
+
+<h2 id="frontends">Frontends</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>The intermediate representation is not intended to be written by humans. Instead higher-level file formats are compiled to the intermediate representation. These compilers are known as frontends. Example frontend compilers may include:</p>
+
+<ul>
+<li>Travis Yaml</li>
+<li>GitLab Yaml</li>
+<li>Bitbucket Pipeline Yaml</li>
+</ul>
+
+<p>The Cloud Native Continuous Delivery working group is also authoring a <a href="/spec/yaml/">specification</a> for a YAML representation of a continuous delivery pipeline. This will include a reference implementation for compiling to the intermediate representation.</p>
+
+<h2 id="backends">Backends</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>The intermediate representation should be platform agnostic. This means it can be consumed by different container engines and orchestration platforms. These engines and platforms are known as backends. Example backends may include:</p>
+
+<ul>
+<li>Docker</li>
+<li>Docker Swarm</li>
+<li>Kubernetes</li>
+<li>Rocket</li>
+<li>Hyper</li>
+<li>ECS</li>
+</ul>
+
+<h1 id="conformance">Conformance</h1>
+
+<p>As well as sections marked as non-normative, all authoring guidelines, diagrams, examples, and notes in this specification are non-normative. Everything else in this specification is normative.</p>
+
+<p>The key words &ldquo;MUST&rdquo;, &ldquo;MUST NOT&rdquo;, &ldquo;REQUIRED&rdquo;, &ldquo;SHALL&rdquo;, &ldquo;SHALL NOT&rdquo;, &ldquo;SHOULD&rdquo;, &ldquo;SHOULD NOT&rdquo;, &ldquo;RECOMMENDED&rdquo;, &ldquo;MAY&rdquo;, and &ldquo;OPTIONAL&rdquo; in this document are to be interpreted as described in <a href="https://tools.ietf.org/html/rfc2119">RFC2119</a>.</p>
+
+<h1 id="structure">Structure</h1>
+
+<p>This section defines the structure of the intermediate representation and custom types used to define the pipeline configuration and execution environment.</p>
+
+<h2 id="the-config-object">The <code>Config</code> object</h2>
+
+<p>The <code>Config</code> is the top-level object used to represent the pipeline.</p>
+
+<pre><code class="language-typescript">interface Config {
+  version: string
+  pipeline: Stage[]
+  networks: Network[]
+  volumes: Volume[]
+}
+</code></pre>
+
+<h2 id="the-stage-object">The <code>Stage</code> object</h2>
+
+<p>The <code>Stage</code> object defines a group of steps.</p>
+
+<pre><code class="language-typescript">interface Stage {
+  name: string
+  steps: Step[]
+}
+</code></pre>
+
+<h3 id="the-name-attribute">The <code>name</code> attribute</h3>
+
+<p>The name of the stage. This attribute is of type string and is required. The name should be globally unique and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-steps-attribute">The <code>steps</code> attribute</h3>
+
+<p>The <code>steps</code> attribute is required and must contain at least one <code>step</code>. If the stage contains multiple steps, each step is executed in parallel. The runtime agent should wait until all steps complete prior before it continues to the next stage in the pipeline.</p>
+
+<h2 id="the-step-object">The <code>Step</code> object</h2>
+
+<p>The <code>Step</code> object defines an individual container process in the pipeline.</p>
+
+<pre><code class="language-typescript">interface Step {
+  name: string
+  alias: string
+  image: string
+  pull: boolean
+  detached: boolean
+  privileged: boolean
+  working_dir: string
+  environment: [string, string]
+  entrypoint: string[]
+  command: string[]
+  devices: string[]
+  extra_hosts: string[]
+  dns: string[]
+  dns_search: string[]
+  shm_size: number
+  tmpfs: string[]
+  volumes: string[]
+  networks: Conn[]
+  auth_config: Auth
+  on_failure: boolean
+  on_success: boolean
+}
+</code></pre>
+
+<h3 id="the-name-attribute-1">The <code>name</code> attribute</h3>
+
+<p>The name of the container. This attribute is of type <code>string</code> and is required. This container name should be globally unique and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-alias-attribute">The <code>alias</code> attribute</h3>
+
+<p>The name of the container as defined by the user (i.e. user-friendly name). This attribute is of type <code>string</code> and is required. The container alias must match <code>[a-zA-Z0-9_-]</code>. The alias should be used to create network links, allowing inter-container communication using the alias as the hostname.</p>
+
+<h3 id="the-image-attribute">The <code>image</code> attribute</h3>
+
+<p>The fully qualified image to start the container from. This attribute is of type string and is required. The image name must also include the tag, where applicable.</p>
+
+<pre><code>image: redis:latest
+image: library/redis:latest
+image: index.docker.io/library/redis:latest
+</code></pre>
+
+<h3 id="the-pull-attribute">The <code>pull</code> attribute</h3>
+
+<p>Pull the latest version of the image from the remote image registry. This attribute is of type <code>boolean</code> and is optional. The default value is false.</p>
+
+<h3 id="the-detached-attribute">The <code>detached</code> attribute</h3>
+
+<p>Start the container and send to the background, and proceed to the next step in the pipeline. This attribute is of type <code>boolean</code> and is optional. The default value is false.</p>
+
+<h3 id="the-privileged-attribute">The <code>privileged</code> attribute</h3>
+
+<p>Start the container with extended privileges. This attribute is of type <code>boolean</code> and is optional. The default value is false.</p>
+
+<h3 id="the-working-dir-attribute">The <code>working_dir</code> attribute</h3>
+
+<p>Start the container in the specified working directory. This attribute is of type <code>string</code> and is optional. Note that the value must be the absolute path of the directory inside the container.</p>
+
+<h3 id="the-environment-attribute">The <code>environment</code> attribute</h3>
+
+<p>Set environment variables in the container. This value is of type <code>[string, string]</code> and is optional.</p>
+
+<pre><code class="language-json">{
+  &quot;GOPATH&quot;: &quot;/go&quot;,
+  &quot;DOCKER_HOST&quot;: &quot;unix:///var/run/docker.sock&quot;
+}
+</code></pre>
+
+<h3 id="the-entrypoint-attribute">The <code>entrypoint</code> attribute</h3>
+
+<p>Override the default image entrypoint.</p>
+
+<h3 id="the-command-attribute">The <code>command</code> attribute</h3>
+
+<p>Override the default image command.</p>
+
+<h3 id="the-devices-attribute">The <code>devices</code> attribute</h3>
+
+<p>Expose devices to a container. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;/dev/sdc:/dev/xvdc&quot;
+]
+</code></pre>
+
+<h3 id="the-dns-attribute">The <code>dns</code> attribute</h3>
+
+<p>Sets the IP addresses added as server lines to the container&rsquo;s <code>/etc/resolv.conf</code> file. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;8.8.8.8&quot;,
+  &quot;9.9.9.9&quot;
+]
+</code></pre>
+
+<h3 id="the-dns-search-attribute">The <code>dns_search</code> attribute</h3>
+
+<p>Sets the domain names that are searched when a bare unqualified hostname is used by writing search lines to the container&rsquo;s <code>/etc/resolv.conf</code> file. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;dc1.example.com&quot;,
+  &quot;dc2.example.com&quot;
+]
+</code></pre>
+
+<h3 id="the-extra-hosts-attribute">The <code>extra_hosts</code> attribute</h3>
+
+<p>Adds additional lines to the container&rsquo;s <code>/etc/hosts</code> file. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;somehost:162.242.195.82&quot;,
+  &quot;otherhost:50.31.209.229&quot;
+]
+</code></pre>
+
+<h3 id="the-shm-size-attribute">The <code>shm_size</code> attribute</h3>
+
+<p>Sets the size of <code>/dev/shm</code> in bytes. This value is of type <code>int64</code> and is optional.</p>
+
+<pre><code class="language-json">{
+  &quot;shm_size&quot;: 64000000
+}
+</code></pre>
+
+<h3 id="the-tmpfs-attribute">The <code>tmpfs</code> attribute</h3>
+
+<p>Mount an empty temporary file system inside of the container. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;/run&quot;,
+  &quot;/tmp&quot;
+]
+</code></pre>
+
+<h3 id="the-volumes-attribute">The <code>volumes</code> attribute</h3>
+
+<p>Mount paths or named volumes, optionally specifying a path on the host machine. This value is of type <code>string[]</code> and is optional.</p>
+
+<pre><code class="language-json">[
+  &quot;default:/root&quot;,
+  &quot;/var/run/docker.sock:/var/run/docker.sock&quot;
+]
+</code></pre>
+
+<h3 id="the-networks-attribute">The <code>networks</code> attribute</h3>
+
+<p>Connects the container to zero or many networks. This attribute is of type <code>Conn[]</code> and is optional.</p>
+
+<h3 id="the-auth-config-section">The <code>auth_config</code> section</h3>
+
+<p>Authentication credentials used to download a container image. This attribute is of type <code>Auth</code> and is optional.</p>
+
+<h3 id="the-on-success-attribute">The <code>on_success</code> attribute</h3>
+
+<p>Execute the step when the pipeline state is passing. This attribute is of type <code>boolean</code> and is required. If this value is missing the step may be ignored and may not execute.</p>
+
+<h3 id="the-on-failure-attribute">The <code>on_failure</code> attribute</h3>
+
+<p>Execute the step even when the pipeline state is failing. This attribute is of type <code>boolean</code> and is optional. If this value is missing the the default value of false is assumed.</p>
+
+<p>This attribute can be used in conjunction with <code>on_success</code>. If both attributes are true, the step will always execute regardless of the pipeline state. This may be useful for configuring a notification step that executes both on success and on failure (non-normative).</p>
+
+<h2 id="the-auth-object">The <code>Auth</code> object</h2>
+
+<p>The <code>Auth</code> object defines authentication credentials used to download container images.</p>
+
+<pre><code class="language-typescript">interface Auth {
+  username: string
+  password: string
+}
+</code></pre>
+
+<h2 id="the-conn-object">The <code>Conn</code> object</h2>
+
+<p>The <code>Conn</code> object defines a container network connection. This information is used to connect a container to a network with optional support for inter-container communication using hostname aliases.</p>
+
+<pre><code class="language-typescript">interface Conn {
+  name: string
+  aliases: string[]
+}
+</code></pre>
+
+<!-- ### The `name` attribute
+
+The name of the `Network`. This attribute is of type `string` and is required.
+
+### The `alias` attribute
+
+The optional list of hostnames for a container on the network. Containers on the same network can use an alias to connect to the container. -->
+
+<h2 id="the-network-object">The <code>Network</code> object</h2>
+
+<p>The <code>Network</code> object defines a network interface. Each pipeline can have zero or many networks and use these network to facilitate inter-container communication. Example use cases may include linking a service container (e.g. redis) to the build container for integration testing.</p>
+
+<pre><code class="language-typescript">interface Network {
+  name: string
+  driver: string
+  driver_opts: [string, string]
+}
+</code></pre>
+
+<h3 id="the-name-attribute-2">The <code>name</code> attribute</h3>
+
+<p>The name of the network. This attribute is of type <code>string</code> and is required. The name should be globally unique and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-driver-attribute">The <code>driver</code> attribute</h3>
+
+<p>The name of the network driver. This attribute is of type <code>string</code> and is required.</p>
+
+<h3 id="the-driver-opts-attribute">The <code>driver_opts</code> attribute</h3>
+
+<p>Additional network driver options in key value format.</p>
+
+<h2 id="the-volume-object">The <code>Volume</code> object</h2>
+
+<p>The <code>Volume</code> object defines a container volume. Each pipeline can have zero or many volumes and use these volumes to to persist data and share state. Example use cases may include cloning a git repository to a volume so that subsequent containers can access the source.</p>
+
+<pre><code class="language-typescript">interface Volume {
+  name: string
+  driver: string
+  driver_opts: [string, string]
+}
+</code></pre>
+
+<h3 id="the-name-attribute-3">The <code>name</code> attribute</h3>
+
+<p>The name of the volume. This attribute is of type <code>string</code> and is required. The name should be globally unique and must match <code>[a-zA-Z0-9_-]</code>.</p>
+
+<h3 id="the-driver-attribute-1">The <code>driver</code> attribute</h3>
+
+<p>The name of the volume driver. This attribute is of type <code>string</code> and is required.</p>
+
+<h3 id="the-driver-opts-attribute-1">The <code>driver_opts</code> attribute</h3>
+
+<p>Additional volume driver options in key value format.</p>
+
+<h2 id="the-state-enum">The <code>State</code> enum</h2>
+
+<p>The <code>State</code> enum defines the state of the pipeline. The default pipeline state is <code>Success</code>. If the pipeline encounters and exception or a steps returns a non-zero exit code, the pipeline state is set to <code>Failure</code>.</p>
+
+<pre><code class="language-typescript">enum State {
+  Success,
+  Failure
+}
+</code></pre>
+
+<h1 id="configuration">Configuration</h1>
+
+<p>The intermediate representation is a JSON document that defines the pipeline execution environment and execution steps. The intermediate representation consists of a top-level object of type <code>Config</code>.</p>
+
+<pre><code class="language-json">{
+  &quot;version&quot;: &quot;1&quot;,
+  &quot;pipeline&quot;: [],
+  &quot;networks&quot;: [],
+  &quot;volumes&quot;: []
+}
+</code></pre>
+
+<h2 id="the-version-attribute">The <code>version</code> attribute</h2>
+
+<p>The <code>version</code> attribute specifies the version of the intermediate representation. This attribute is of type <code>string</code> and is optional. When empty the runtime should assume to the latest supported version of the specification.</p>
+
+<h2 id="the-volumes-section">The <code>volumes</code> section</h2>
+
+<p>The <code>volumes</code> section defines a list of volumes created at runtime for the pipeline. Individual steps are optionally configured to mount these volumes. Note that volumes are scoped to a single running pipeline, and may not be shared with other running pipelines.</p>
+
+<p>Example volume configuration:</p>
+
+<pre><code class="language-json">{
+  &quot;volumes&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;local&quot;
+    }
+  ]
+}
+</code></pre>
+
+<p>Example step configured to mount the default volume:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_1&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ]
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<h2 id="the-networks-section">The <code>networks</code> section</h2>
+
+<p>The <code>networks</code> section defines a list of networks created at runtime for the pipeline. Individual steps are optionally configured to join these networks. Note that networks are scoped to a single running pipeline, and may not be shared with other running pipelines.</p>
+
+<p>Example bridge network configuration:</p>
+
+<pre><code class="language-json">{
+  &quot;networks&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;bridge&quot;
+    }
+  ]
+}
+</code></pre>
+
+<p>Example step configured to connect to the default network:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_0&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_0&quot;,
+          &quot;image&quot;: &quot;redis:latest&quot;,
+          &quot;networks&quot;: [
+            {
+              &quot;name&quot;: &quot;default&quot;,
+              &quot;aliases&quot;: [ &quot;redis &quot;]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<p>Note the above example defines a network alias for the container. Containers on the same network can use the alias as a hostname to connect to the container.</p>
+
+<h2 id="the-pipeline-section">The <code>pipeline</code> section</h2>
+
+<p>The <code>pipeline</code> section defines a list of stages that are executed sequentially. Each stage contains of a list of one or more steps.</p>
+
+<p>Example pipeline with multiple stages:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: []
+    }
+    {
+      &quot;name&quot;: &quot;stage_2&quot;,
+      &quot;steps&quot;: []
+    }
+  ]
+}
+</code></pre>
+
+<h3 id="the-steps-section">The <code>steps</code> section</h3>
+
+<p>The <code>steps</code> section defines a list of steps executed in parallel. The runtime must wait until all steps in the current stage are finished before moving to the next stage in the pipeline.</p>
+
+<p>Example stage with multiple steps:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_01&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;set -e; go build; go test&quot;],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        },
+        {
+          &quot;name&quot;: &quot;step_02&quot;,
+          &quot;image&quot;: &quot;node:latest&quot;,
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;set -e; npm install; npm test&quot;],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<h3 id="the-step-attributes">The <code>step</code> attributes</h3>
+
+<p>The <code>step</code> object defines an individual container process. The runtime starts the container process and waits for the container to exit. If the container exit code <code>!= 0</code> the pipeline is set to a <code>Failure</code> state.</p>
+
+<p>Example step:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_01&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;go test&quot;],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<p>Example docker command used to run the step:</p>
+
+<pre><code class="language-sh">docker run --name &quot;step_01&quot; --entrypoint &quot;/bin/sh&quot; golang:latest &quot;-c&quot; &quot;go test&quot;
+</code></pre>
+
+<h3 id="the-detached-attribute-1">The <code>detached</code> attribute</h3>
+
+<p>The detached attribute instructs the runtime to start a container in the background without waiting for the container to exit. Subsequent stages and steps in the pipeline are executed while the container continues to run in the background.</p>
+
+<p>Detached containers are run for the duration of the pipeline only. When the last stage in the pipeline completes all service containers are stopped and destroyed. Note that the exit code for detached containers is ignored and does not impact the overall pipeline state.</p>
+
+<p>Example configuration starts a <code>redis:latest</code> service container in detached mode. The service container is available to subsequent steps in the pipeline using the <code>redis</code> hostname.</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_1&quot;,
+          &quot;image&quot;: &quot;redis:latest&quot;,
+          &quot;networks&quot;: [
+            {
+              &quot;name&quot;: &quot;default&quot;,
+              &quot;aliases&quot;: [ &quot;redis&quot; ]
+            }
+          ],
+          &quot;detached&quot;: true,
+          &quot;on_success&quot;: true
+        }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;stage_2&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_2&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;networks&quot;: [
+            {
+              &quot;name&quot;: &quot;default&quot;,
+              &quot;aliases&quot;: []
+            }
+          ],
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;go test&quot;],
+          &quot;on_success&quot;: true
+        }
+      ]
+    }
+  ],
+  &quot;networks&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;bridge&quot;
+    }
+  ]
+}
+</code></pre>
+
+<h1 id="states">States</h1>
+
+<p>The pipeline state can be one of the below values. The pipeline state is set to <code>Failure</code> if an exception is encountered or if a step returns an non-zero exit code.</p>
+
+<pre><code class="language-typescript">enum State {
+  Success,
+  Failure
+}
+</code></pre>
+
+<p>Please note that when the pipeline state is set to <code>Failure</code> the pipeline must continue execution. The state is evaluated prior to execution of each pipeline step to determine if it should be executed or skipped.</p>
+
+<ul>
+<li>If the pipeline state is <code>Success</code> and the step&rsquo;s <code>on_success</code> attribute is <code>true</code>, the step is executed</li>
+<li>If the pipeline state is <code>Success</code> and the step&rsquo;s <code>on_success</code> attribute is <code>false</code>, the step is skipped</li>
+<li>If the pipeline state is <code>Failure</code> and the step&rsquo;s <code>on_failure</code> attribute is <code>true</code>, the step is executed</li>
+<li>If the pipeline state is <code>Failure</code> and the step&rsquo;s <code>on_failure</code> attribute is <code>false</code>, the step is skipped</li>
+</ul>
+
+<p>Example step executes when pipeline <code>state != Failure</code></p>
+
+<pre><code class="language-diff">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_01&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;go test&quot;],
++         &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<p>Example step executes when pipeline <code>state == Failure</code></p>
+
+<pre><code class="language-diff">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;stage_1&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;step_01&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [ &quot;/bin/sh&quot; ],
+          &quot;command&quot;: [ &quot;-c&quot;, &quot;go test&quot;],
+          &quot;on_success&quot;: false,
++         &quot;on_failure&quot;: true
+        }
+      ]
+    }
+  ]
+}
+</code></pre>
+
+<h1 id="security">Security</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Backends should audit the use of privileged features and capabilities because hostile authors could otherwise use these settings to compromise the host machine.</p>
+
+<h1 id="disk-space">Disk Space</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>Backends should limit the total amount of space allowed for volume storage, because hostile authors could otherwise use this feature to exhaust the system&rsquo;s available disk space.</p>
+
+<p>Backends should also limit the total amount of space allowed for caching images (e.g. Docker images), and should regularly flush the cache to remove unused or stale images.</p>
+
+<h1 id="examples">Examples</h1>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>This section provides samples of the intermediate representation to highlight various features of this specification.</p>
+
+<h2 id="example-pipeline">Example Pipeline</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>In the following example the intermediate representation defines two stages. The first stage clones the github project to a shared volume. The second stage executes the test suite for the project.</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;clone_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;git_clone_step&quot;,
+          &quot;image&quot;: &quot;git:latest&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;git clone git://github.com/foo/bar.git /go/src/github.com/foo/bar&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    },
+    {
+      &quot;name&quot;: &quot;test_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;go_test_step&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;go test -v github.com/foo/bar&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    }
+  ],
+
+  &quot;volumes&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;local&quot;
+    }
+  ]
+}
+</code></pre>
+
+<h2 id="example-pipeline-with-services">Example Pipeline with Services</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>In the following example the intermediate representation defines a service container (redis) that runs in detached mode, which is non-blocking. Subsequent steps in the pipeline are able to access the service container using its alias hostname.</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;clone_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;clone&quot;,
+          &quot;image&quot;: &quot;git:latest&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;git clone git://github.com/foo/bar.git /go/src/github.com/foo/bar&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    },
+    {
+      &quot;name&quot;: &quot;service_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;redis_step&quot;,
+          &quot;alias&quot;: &quot;redis&quot;,
+          &quot;image&quot;: &quot;redis:latest&quot;,
+          &quot;detach&quot;: true,
+          &quot;networks&quot;: [
+            {
+              &quot;name&quot;: &quot;default&quot;,
+              &quot;aliases&quot;: [ &quot;redis&quot; ]
+            }
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    },
+    {
+      &quot;name&quot;: &quot;test_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;test_step&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;go test -v github.com/foo/bar&quot;
+          ],
+          &quot;networks&quot;: [
+            {
+              &quot;name&quot;: &quot;default&quot;,
+              &quot;aliases&quot;: [ &quot;redis&quot; ]
+            }
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    }
+  ],
+
+  &quot;networks&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;bridge&quot;
+    }
+  ],
+
+  &quot;volumes&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;local&quot;
+    }
+  ]
+}
+</code></pre>
+
+<h2 id="example-pipeline-with-parallelism">Example Pipeline with Parallelism</h2>
+
+<p><em>This section is non-normative.</em></p>
+
+<p>In the following example the intermediate representation defines two stages. The first stage clones the github project to a shared volume. The second stage builds and tests the frontend and backend in parallel.</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;clone_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;git_clone_step&quot;,
+          &quot;image&quot;: &quot;git:latest&quot;,
+          &quot;working_dir&quot;: &quot;/go/src/github.com/foo/bar&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;git clone git://github.com/foo/bar.git /go/src/github.com/foo/bar&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    },
+    {
+      &quot;name&quot;: &quot;test_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;go_test_step&quot;,
+          &quot;image&quot;: &quot;golang:latest&quot;,
+          &quot;working_dir&quot;: &quot;/go/src/github.com/foo/bar&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;go test -v; go build&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        },
+        {
+          &quot;name&quot;: &quot;node_test_step&quot;,
+          &quot;image&quot;: &quot;node:latest&quot;,
+          &quot;working_dir&quot;: &quot;/go/src/github.com/foo/bar&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;npm install; npm test; npm run bundle&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/go&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    }
+  ],
+
+  &quot;volumes&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;local&quot;
+    }
+  ]
+}
+</code></pre>
+
+<h2 id="example-travis-configuration">Example Travis Configuration</h2>
+
+<p>The goal of this specification is to provide a machine writable format to which higher-level configurations can compile. This is an example <code>.travis.yml</code> configuration:</p>
+
+<pre><code class="language-yaml">language: node
+
+node_js:
+  - 6.1
+
+install:
+  - npm install
+script:
+  - npm test
+</code></pre>
+
+<p>Example <code>.travis.yml</code> compiled to the intermediate representation:</p>
+
+<pre><code class="language-json">{
+  &quot;pipeline&quot;: [
+    {
+      &quot;name&quot;: &quot;clone_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;clone_step&quot;,
+          &quot;image&quot;: &quot;node:6.1&quot;,
+          &quot;working_dir&quot;: &quot;/Users/travis/build&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;git clone git://github.com/foo/bar.git /Users/travis/build&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/Users/travis/build&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    },
+    {
+      &quot;name&quot;: &quot;install_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;install_step&quot;,
+          &quot;image&quot;: &quot;node:6.1&quot;,
+          &quot;working_dir&quot;: &quot;/Users/travis/build&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;npm install&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/Users/travis/build&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    }
+    {
+      &quot;name&quot;: &quot;script_stage&quot;,
+      &quot;steps&quot;: [
+        {
+          &quot;name&quot;: &quot;script_step&quot;,
+          &quot;image&quot;: &quot;node:6.1&quot;,
+          &quot;working_dir&quot;: &quot;/Users/travis/build&quot;,
+          &quot;entrypoint&quot;: [
+            &quot;/bin/sh&quot;,
+            &quot;-c&quot;
+          ],
+          &quot;command&quot;: [
+            &quot;npm test&quot;
+          ],
+          &quot;volumes&quot;: [
+            &quot;default:/Users/travis/build&quot;
+          ],
+          &quot;on_success&quot;: true,
+          &quot;on_failure&quot;: false
+        }
+      ],
+    }
+  ],
+
+  &quot;volumes&quot;: [
+    {
+      &quot;name&quot;: &quot;default&quot;,
+      &quot;driver&quot;: &quot;local&quot;
+    }
+  ]
+}
+</code></pre>
+
+<h1 id="references">References</h1>
+
+<h2 id="normative-references">Normative References</h2>
+
+<dl>
+<dt>JSON SPECIFICATION</dt>
+<dd>A. Barth. HTTP State Management Mechanism. April 2011. <a href="https://tools.ietf.org/html/rfc6265">https://tools.ietf.org/html/rfc6265</a></dd>
+</dl>
+
+<h2 id="informative-references">Informative References</h2>
+
+<dl>
+<dt>DOCKER RUN</dt>
+<dd><a href="https://docs.docker.com/engine/reference/run/">Docker Run Reference</a>, Docker Inc.</dd>
+<dt>DOCKER COMPOSE</dt>
+<dd><a href="https://docs.docker.com/compose/compose-file/">Compose File Reference</a>, Docker Inc.</dd>
+</dl>
+
+			</section>
+		</main>
+
+		<script src="/highlight.pack.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+	</body>
+</html>
